@@ -49,7 +49,7 @@ class UserController {
       return res.status(400).json({ error: 'Validation fails' });
     }
 
-    const { email, oldPassword } = req.body;
+    const { email, password, oldPassword, confirmPassword } = req.body;
 
     const user = await User.findByPk(req.userId);
 
@@ -62,6 +62,12 @@ class UserController {
 
     if (oldPassword && !(await user.checkPassword(oldPassword))) {
       return res.status(401).json({ error: 'Password does not match' });
+    }
+
+    if (password !== confirmPassword) {
+      return res
+        .status(401)
+        .json({ error: 'Password and Confirm password are not the same' });
     }
 
     const { id, name, provider } = await user.update(req.body);
